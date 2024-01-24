@@ -15,7 +15,18 @@ history_file_path = Path('i-o/follows.csv')
 stalking_file_path = Path('i-o/stalking.csv')
 
 
-#### Define functions ####
+def clean_newlines(s: str) -> str:
+    """
+    Replaces newlines and carriage returns in a string with a space.
+
+    Args:
+        s (str): The string to be cleaned.
+
+    Returns:
+        str: The cleaned string.
+    """
+    return s.replace('\n', ' ').replace('\r', ' ')
+
 
 def get_user_ids(users: dict) -> pd.DataFrame:
     """
@@ -63,6 +74,9 @@ def get_follows(follow_dat, mark) -> pd.DataFrame:
             y = x.get('rest_id')
             w = x.get('screen_name')
             if z := x.get('legacy', {}):
+                # Clean newlines in description or any other multi-line field
+                if 'description' in z:
+                    z['description'] = clean_newlines(z['description'])
                 d.append({'mark': mark, 'rest_id': y, 'screen_name': w} | z)
 
     return d
